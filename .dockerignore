@@ -1,0 +1,11 @@
+**/.git
+**/.gitignore
+**/__pycache__
+**/.venv
+**/.vscode
+**/.dockerignore
+**/.env
+**/Dockerfile*
+**/*.code-workspace*
+LICENSE
+README.md
