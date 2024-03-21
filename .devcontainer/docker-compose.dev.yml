@@ -4,15 +4,17 @@ services:
     build:
       # the path of the Dockerfile and context is relative to the *primary* docker-compose.yml
       # (the first in the devcontainer.json "dockerComposeFile" array).
-      # This case assumes the your primary file is in the root of your project.
-      context: .
-      dockerfile: Dockerfile    # Uncomment if you want to override the service's Dockerfile to one in the .devcontainer
+      # This case assumes your primary file is in the subfolder of the root of your project.
+      context: ..
+      dockerfile: build/Dockerfile
+      target: dev
     # local path to remote path mapping with anonimous volume
+    # '..' because of context: ..
     # :delegated means changes in the container may not be immediately reflected on the host
     # :cached means changes in the host may not be immediately reflected on the container
     # :consistent means identical view all the time
     volumes:
-      - .:/workspace:cached
+      - ..:/workspace:cached
     # puts the Dev Container on the same network as the database, so that it can access it on localhost
 #    network_mode: service:db
     # Overrides default command so things don't shut down after the process ends.

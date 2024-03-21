@@ -1,7 +1,8 @@
 {
 	"name": "llmassist dev container",
 	"dockerComposeFile": [
-		"../docker-compose.yml"
+		"../build/docker-compose.base.yml",
+		"docker-compose.dev.yml"
 	],
 	// service name from docker-compose.yml
 	"service": "devcontainer",

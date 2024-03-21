@@ -8,4 +8,5 @@
 **/Dockerfile*
 **/*.code-workspace*
 LICENSE
+Makefile
 README.md
