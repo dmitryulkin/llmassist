@@ -10,6 +10,13 @@ RUN python3 -m venv $POETRY_VENV \
     && $POETRY_VENV/bin/pip install poetry
 ENV PATH="${PATH}:${POETRY_VENV}/bin"
 
+# create non root user
+ARG USERNAME=nonroot
+ARG USER_UID=5678
+ARG USER_GID=$USER_UID
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+
 # -------------------------- dev -------------------------------------------
 FROM base as dev
 # Keeps Python from generating .pyc files in the container
@@ -17,7 +24,13 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get -y install git
+RUN apt-get install -y git
+
+# [Optional] Add sudo support.
+RUN apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+USER $USERNAME
 
 # -------------------------- prod ------------------------------------------
 FROM base as prod
@@ -28,9 +41,8 @@ COPY .. .
 RUN poetry check
 RUN poetry install --no-interaction --no-cache --no-root
 
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
+# Adds permission to access the /app folder
+RUN chown -R $USERNAME /app
+USER $USERNAME
 
 CMD ["poetry", "run", "python", "-m", "src"]

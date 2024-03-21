@@ -21,7 +21,11 @@
 				"davidanson.vscode-markdownlint"
 			]
 		}
-	  }
+	  },
+
+
+	// connect as an existing user other than the container default
+	"remoteUser": "nonroot"
 
 	// Features to add to the dev container.
 	// "features": {},
