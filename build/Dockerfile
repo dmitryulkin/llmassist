@@ -1,26 +1,26 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
+# -------------------------- base ------------------------------------------
 FROM python:3.12-slim as base
+
 RUN apt-get update && apt-get upgrade -y
 
+ENV POETRY_VENV=/opt/poetry-venv
+RUN python3 -m venv $POETRY_VENV \
+    && $POETRY_VENV/bin/pip install -U pip setuptools \
+    && $POETRY_VENV/bin/pip install poetry
+ENV PATH="${PATH}:${POETRY_VENV}/bin"
+
+# -------------------------- dev -------------------------------------------
 FROM base as dev
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-# To avoid poetry installatin each time
-FROM base as poetry
+RUN apt-get -y install git
 
-ENV POETRY_VENV=/opt/poetry-venv
-
-RUN python3 -m venv $POETRY_VENV \
-    && $POETRY_VENV/bin/pip install -U pip setuptools \
-    && $POETRY_VENV/bin/pip install poetry
-
-FROM poetry as prod
-
-COPY --from=poetry ${POETRY_VENV} ${POETRY_VENV}
-ENV PATH="${PATH}:${POETRY_VENV}/bin"
+# -------------------------- prod ------------------------------------------
+FROM base as prod
 
 WORKDIR /app
 COPY .. .
