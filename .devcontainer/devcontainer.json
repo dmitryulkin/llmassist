@@ -10,8 +10,12 @@
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
 	"workspaceFolder": "/workspace",
 
+	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
+			// VS Code settings
+			"settings": {
+			},
 			"extensions": [
 				"ms-python.python",
 				"ms-python.flake8",
@@ -40,8 +44,4 @@
 
 	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
 	// "shutdownAction": "none",
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
 }
