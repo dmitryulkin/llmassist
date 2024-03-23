@@ -22,7 +22,9 @@
         "ms-azuretools.vscode-docker",
         "davidanson.vscode-markdownlint",
         "mhutchie.git-graph",
-        "GitHub.vscode-pull-request-github"
+        "GitHub.vscode-pull-request-github",
+        "ms-python.isort",
+        "ms-python.mypy-type-checker"
       ]
     }
   },
