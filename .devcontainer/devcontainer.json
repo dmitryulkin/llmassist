@@ -9,12 +9,18 @@
   // The optional 'workspaceFolder' property is the path VS Code should open by default when
   // connected. This is typically a file mount in .devcontainer/docker-compose.yml
   "workspaceFolder": "/workspace",
-
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
       // VS Code settings
-      "settings": {},
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/usr/bin/bash"
+          }
+        }
+      },
       "extensions": [
         "ms-python.python",
         "ms-python.flake8",
@@ -28,22 +34,16 @@
       ]
     }
   },
-
   // runs in /workspace folder
   "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
-
   // connect as an existing user other than the container default
   "remoteUser": "nonroot"
-
   // Features to add to the dev container.
   // "features": {},
-
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
-
   // Uncomment the next line if you want start specific services in your Docker Compose config.
   // "runServices": [],
-
   // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
   // "shutdownAction": "none",
 }
