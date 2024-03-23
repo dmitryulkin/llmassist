@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# /workspase is inaccessible on image creation it is mounted after that
-# here are modification on mounted volume with project
-
+# Motivation: /workspase is inaccessible on image creation bacuse of it is
+# mounted after that. Here are modifications on mounted volume with sources
 poetry check
-poetry install --no-interaction --no-cache --no-root
+poetry install --with dev --no-interaction --no-cache --no-root
 
 sudo chown -R nonroot /workspace
