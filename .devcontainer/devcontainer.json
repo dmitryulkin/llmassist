@@ -1,47 +1,47 @@
 {
-	"name": "llmassist dev container",
-	"dockerComposeFile": [
-		"../build/docker-compose.base.yml",
-		"docker-compose.dev.yml"
-	],
-	// service name from docker-compose.yml
-	"service": "devcontainer",
-	// The optional 'workspaceFolder' property is the path VS Code should open by default when
-	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
-	"workspaceFolder": "/workspace",
+  "name": "llmassist dev container",
+  "dockerComposeFile": [
+    "../build/docker-compose.base.yml",
+    "docker-compose.dev.yml"
+  ],
+  // service name from docker-compose.yml
+  "service": "devcontainer",
+  // The optional 'workspaceFolder' property is the path VS Code should open by default when
+  // connected. This is typically a file mount in .devcontainer/docker-compose.yml
+  "workspaceFolder": "/workspace",
 
-	// Configure tool-specific properties.
-	"customizations": {
-		"vscode": {
-			// VS Code settings
-			"settings": {
-			},
-			"extensions": [
-				"ms-python.python",
-				"ms-python.flake8",
-				"ms-python.autopep8",
-				"mhutchie.git-graph",
-				"ms-azuretools.vscode-docker",
-				"davidanson.vscode-markdownlint"
-			]
-		}
-	  },
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      // VS Code settings
+      "settings": {},
+      "extensions": [
+        "ms-python.python",
+        "ms-python.flake8",
+        "ms-python.autopep8",
+        "ms-azuretools.vscode-docker",
+        "davidanson.vscode-markdownlint",
+        "mhutchie.git-graph",
+        "GitHub.vscode-pull-request-github"
+      ]
+    }
+  },
 
-	// runs in /workspace folder
-	"postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+  // runs in /workspace folder
+  "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
 
-	// connect as an existing user other than the container default
-	"remoteUser": "nonroot"
+  // connect as an existing user other than the container default
+  "remoteUser": "nonroot"
 
-	// Features to add to the dev container.
-	// "features": {},
+  // Features to add to the dev container.
+  // "features": {},
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
 
-	// Uncomment the next line if you want start specific services in your Docker Compose config.
-	// "runServices": [],
+  // Uncomment the next line if you want start specific services in your Docker Compose config.
+  // "runServices": [],
 
-	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
-	// "shutdownAction": "none",
+  // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+  // "shutdownAction": "none",
 }
