@@ -1,6 +1,5 @@
 # vs code workspace
 *.code-workspace
-.vscode/
 
 # virtual env
 .venv/
