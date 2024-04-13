@@ -19,18 +19,31 @@
           "bash": {
             "path": "/usr/bin/bash"
           }
-        }
+        },
+        "shellformat.path": "/usr/bin/shfmt"
       },
       "extensions": [
+        // python
         "ms-python.python",
+        "ms-python.black-formatter",
         "ms-python.flake8",
-        "ms-python.autopep8",
-        "ms-azuretools.vscode-docker",
-        "davidanson.vscode-markdownlint",
-        "mhutchie.git-graph",
-        "GitHub.vscode-pull-request-github",
         "ms-python.isort",
-        "ms-python.mypy-type-checker"
+        "ms-python.mypy-type-checker",
+        "njpwerner.autodocstring",
+        // make
+        "carlos-algms.make-task-provider",
+        // shell
+        "timonwong.shellcheck",
+        "foxundermoon.shell-format",
+        "mads-hartmann.bash-ide-vscode",
+        "tetradresearch.vscode-h2o", // Shell Script Command Completion
+        // markdown
+        "davidanson.vscode-markdownlint",
+        // docker
+        "ms-azuretools.vscode-docker",
+        // GIT
+        "mhutchie.git-graph",
+        "GitHub.vscode-pull-request-github"
       ]
     }
   },

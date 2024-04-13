@@ -4,6 +4,7 @@ FROM python:3.12-slim as base
 
 RUN apt-get update && apt-get upgrade -y
 
+# poetry install
 ENV POETRY_VENV=/opt/poetry-venv
 RUN python3 -m venv $POETRY_VENV \
     && $POETRY_VENV/bin/pip install -U pip setuptools \
@@ -24,7 +25,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get install -y git
+RUN apt-get install -y git && \
+    apt-get install gnupg2 -y && \
+    apt-get install -y shfmt
 
 # [Optional] Add sudo support.
 RUN apt-get install -y sudo \
