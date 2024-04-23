@@ -1,0 +1,3 @@
+[submodule "tor-lyrebird"]
+	path = tor-lyrebird
+	url = https://github.com/dmitryulkin/tor-lyrebird.git
