@@ -4,8 +4,8 @@
 # virtual env
 .venv/
 
-# dev evironment variables
-.env
+# app evironment variables
+/.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
