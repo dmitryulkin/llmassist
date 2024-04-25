@@ -1,1 +1,7 @@
-version: '3.8'
+services:
+  tor:
+    extends:
+      file: ../tor-lyrebird/docker-compose.yml
+      service: tor-lyrebird
+    # overide tor-lyrebird CMD and start tor only on env TOR_PROXY not equals 0
+    command: sh -c "if [ "${TOR_PROXY:-0}" -eq 0 ]; then exit 0; else /srv/start.sh; fi"
