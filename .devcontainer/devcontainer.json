@@ -1,8 +1,10 @@
 {
   "name": "llmassist dev container",
+  // path of the first file in list is used as base folder for build
+  // for example .env will be used from its folder
   "dockerComposeFile": [
-    "../build/docker-compose.base.yml",
-    "docker-compose.dev.yml"
+    "docker-compose.dev.yml",
+    "../build/docker-compose.base.yml"
   ],
   // service name from docker-compose.yml
   "service": "devcontainer",
@@ -51,12 +53,4 @@
   "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
   // connect as an existing user other than the container default
   "remoteUser": "nonroot"
-  // Features to add to the dev container.
-  // "features": {},
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [],
-  // Uncomment the next line if you want start specific services in your Docker Compose config.
-  // "runServices": [],
-  // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
-  // "shutdownAction": "none",
 }

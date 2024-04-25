@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   app:
     build:
@@ -10,5 +9,3 @@ services:
       target: prod
     # define name of contain to address it
     container_name: app
-    # puts the Dev Container on the same network as the database, so that it can access it on localhost
-#    network_mode: service:db

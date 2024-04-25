@@ -12,11 +12,10 @@ RUN python3 -m venv $POETRY_VENV \
 ENV PATH="${PATH}:${POETRY_VENV}/bin"
 
 # create non root user
-ARG USERNAME=nonroot
-ARG USER_UID=5678
-ARG USER_GID=$USER_UID
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+ARG USER_NAME=nonroot
+ARG USER_ID=5678
+RUN groupadd --gid $USER_ID $USER_NAME \
+    && useradd --uid $USER_ID --gid $USER_ID -m $USER_NAME
 
 # -------------------------- dev -------------------------------------------
 FROM base as dev
@@ -26,14 +25,16 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get install -y git && \
-    apt-get install gnupg2 -y && \
-    apt-get install -y shfmt
+    apt-get install -y gnupg2 && \
+    apt-get install -y shfmt && \
+    apt-get install -y make && \
+    apt-get install -y curl
 
 # [Optional] Add sudo support.
 RUN apt-get install -y sudo \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
-USER $USERNAME
+    && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
+    && chmod 0440 /etc/sudoers.d/$USER_NAME
+USER $USER_NAME
 
 # -------------------------- prod ------------------------------------------
 FROM base as prod
@@ -45,7 +46,7 @@ RUN poetry check
 RUN poetry install --no-interaction --no-cache --no-root
 
 # Adds permission to access the /app folder
-RUN chown -R $USERNAME /app
-USER $USERNAME
+RUN chown -R $USER_NAME /app
+USER $USER_NAME
 
 CMD ["poetry", "run", "python", "-m", "src"]
