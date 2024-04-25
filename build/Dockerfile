@@ -28,6 +28,10 @@ RUN apt-get install -y git && \
     apt-get install -y gnupg2 && \
     apt-get install -y shfmt && \
     apt-get install -y make && \
+    # bsdmainutils for hexdump
+    apt-get install -y bsdmainutils && \
+    # netcat for nc
+    apt-get install -y netcat-traditional && \
     apt-get install -y curl
 
 # [Optional] Add sudo support.
