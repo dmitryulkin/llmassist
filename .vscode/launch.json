@@ -6,6 +6,21 @@
       "type": "debugpy",
       "request": "launch",
       "module": "src"
+    },
+    {
+      "name": "Python: Debug Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "purpose": [
+        "debug-test"
+      ],
+      "console": "integratedTerminal",
+      // to disable pytest-cov in debug or there will be conflict
+      "env": {
+        "PYTEST_ADDOPTS": "--no-cov"
+      },
+      "justMyCode": true
     }
   ]
 }

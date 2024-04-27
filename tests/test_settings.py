@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from tests.conftest import TestSettings
+from tests.mocks import TestSettings
 
 
 def test_default_settings():
