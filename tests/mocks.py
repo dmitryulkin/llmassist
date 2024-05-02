@@ -2,10 +2,10 @@ from typing import Tuple, Type
 
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
 
-from src.utils import settings
+from src.utils.settings import Settings
 
 
-class TestSettings(settings.Settings):
+class SettingsMock(Settings):
     # read only __init__ parameters
     @classmethod
     def settings_customise_sources(
@@ -16,5 +16,5 @@ class TestSettings(settings.Settings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
-        # here we choose to ignore arguments from init_settings
+        # here we choose to ignore arguments other then from init_settings
         return (init_settings,)
