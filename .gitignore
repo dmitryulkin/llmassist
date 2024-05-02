@@ -14,7 +14,7 @@ __pycache__/
 
 # pytest
 .pytest_cache
-.coverage
+tests/cov
 
 # C extensions
 *.so

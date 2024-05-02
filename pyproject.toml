@@ -30,6 +30,16 @@ markers = [
   "smoke: Run the smoke test functions"
 ]
 xfail_strict = true
+norecursedirs = ".* *.egg dist build src tor-lyrebird"
+
+[tool.coverage.run]
+branch = true
+relative_files = true
+data_file="tests/cov/.coverage"
+source = ["src"]
+[tool.coverage.html]
+directory="tests/cov/html"
+
 
 [build-system]
 requires = ["poetry-core"]
