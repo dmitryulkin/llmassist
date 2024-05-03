@@ -1,12 +1,16 @@
-import pytest
+from pathlib import Path
 
-import src.utils.settings
+import pytest
+from pytest import FixtureRequest, MonkeyPatch
+
 from src.utils.context import ctx
 from tests.mocks import SettingsMock
 
 
 @pytest.fixture
-def patch_settings(tmp_path, request, monkeypatch):
+def patch_settings(
+    tmp_path: Path, request: FixtureRequest, monkeypatch: MonkeyPatch
+) -> None:
     settings = SettingsMock()
     settings.LOG_FILE = tmp_path / ctx.settings.LOG_FILE
 
@@ -26,4 +30,4 @@ def patch_settings(tmp_path, request, monkeypatch):
         # set key
         setattr(settings, key, val)
 
-    monkeypatch.setattr(src.utils.context.ctx, "settings", settings)
+    monkeypatch.setattr(ctx, "settings", settings)

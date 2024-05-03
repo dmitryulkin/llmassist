@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     @field_validator("LOG_LEVEL", "LOG_FILE_LEVEL", mode="before")
     @classmethod
     def transform_log_level_str_to_int(cls, value: int | str) -> int:
-        value = value if type(value) is int else value.casefold()
+        value = value.casefold() if type(value) is str else value
         match value:
             case "debug" | logging.DEBUG:
                 return logging.DEBUG
