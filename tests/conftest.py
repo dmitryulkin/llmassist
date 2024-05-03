@@ -12,7 +12,7 @@ def patch_settings(
     tmp_path: Path, request: FixtureRequest, monkeypatch: MonkeyPatch
 ) -> None:
     settings = SettingsMock()
-    settings.LOG_FILE = tmp_path / ctx.settings.LOG_FILE
+    settings.LOG_FILE = tmp_path / settings.LOG_FILE
 
     # Patch the settings with the param vars
     stgs_vars = getattr(request, "param", {})
