@@ -1,17 +1,9 @@
-.PHONY: start
-start:
-	docker-compose.exe -f build/docker-compose.base.yml -f build/docker-compose.prod.yml up --force-recreate ${MODE}
+.PHONY: run test coverage
+run:
+	poetry run python -m src
 
-.PHONY: stop
-stop:
-	docker-compose.exe -f build/docker-compose.base.yml -f build/docker-compose.prod.yml down --remove-orphans ${MODE}
+test:
+	poetry run pytest --cov=src
 
-# rebuild and start only app
-.PHONY: reapp
-reapp:
-	docker-compose.exe -f build/docker-compose.base.yml -f build/docker-compose.prod.yml up --no-deps --build ${MODE} app
-
-# open tty to app while it works
-.PHONY: ttyapp
-ttyapp:
-	docker exec -ti app /bin/bash
+coverage:
+	poetry run pytest --cov=src --cov-report=html
