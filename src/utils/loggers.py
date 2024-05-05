@@ -4,8 +4,8 @@ from pathlib import Path
 from src.utils.context import ctx
 
 _log_format: str = (
-    "%(asctime)s - [%(levelname)s] - %(name)s - "
-    + "(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+    "%(asctime)s - [%(levelname)s] - %(message)s - %(name)s - "
+    + "(%(filename)s).%(funcName)s(%(lineno)d)"
 )
 
 

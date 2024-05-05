@@ -27,7 +27,9 @@ class Settings(BaseSettings):
 
     @field_validator("LOG_LEVEL", "LOG_FILE_LEVEL", mode="before")
     @classmethod
-    def transform_log_level_str_to_int(cls, value: int | str) -> int:
+    def transform_log_level_str_to_int(
+        cls, value: int | str, info: ValidationInfo
+    ) -> int:
         value = value.casefold() if type(value) is str else value
         match value:
             case "debug" | logging.DEBUG:
@@ -39,7 +41,7 @@ class Settings(BaseSettings):
             case "error":
                 return logging.ERROR
             case _:
-                raise ValueError(".env LOG_LEVEL is incorrect")
+                raise ValueError(f".env {info.field_name} is incorrect")
 
     @field_validator("TOR_SOCKS5_PORT", mode="after")
     @classmethod
@@ -48,8 +50,8 @@ class Settings(BaseSettings):
     ) -> PositiveInt | None:
         if info.data["USE_TOR"]:
             assert (
-                value is not None
-            ), "USE_TOR=True. TOR_SOCKS5_PORT is required."
+                value
+            ), "TOR_SOCKS5_PORT is required because of .env USE_TOR=True"
         return value
 
     # read only .env and secrets

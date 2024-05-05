@@ -1,27 +1,25 @@
 import asyncio
-import logging
+import traceback
+from logging import Logger
 
-from g4f import Provider
-from g4f.client import Client
+from src.utils.context import ctx
+from src.utils.loggers import get_logger
 
-
-def start_llmassist():
-    client = Client(
-        provider=Provider.RetryProvider(
-            [Provider.Liaobots],
-            shuffle=False
-        )
-    )
-    response = client.chat.completions.create(
-        model="",
-        messages=[{"role": "user", "content": "Hello"}],
-    )
-    print(response.choices[0].message.content)
+logger: Logger | None = None
 
 
-async def main():
-    await asyncio.to_thread(start_llmassist)
+async def main() -> None:
+    pass
+
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    try:
+        ctx.init()
+        logger = get_logger(__name__)
+    except Exception:
+        print("Error during application initialization.")
+        traceback.print_exc()
+        exit(-1)
+
+    logger.info("Start application")
     asyncio.run(main())
