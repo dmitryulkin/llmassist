@@ -40,7 +40,6 @@ source = ["src"]
 [tool.coverage.html]
 directory="tests/cov/html"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

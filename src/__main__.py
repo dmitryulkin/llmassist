@@ -2,7 +2,7 @@ import asyncio
 import traceback
 from logging import Logger
 
-from src.utils.context import ctx
+from src.context import ctx
 from src.utils.loggers import get_logger
 
 logger: Logger | None = None

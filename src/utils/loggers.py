@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from src.utils.context import ctx
+from src.context import ctx
 
 _log_format: str = (
     "%(asctime)s - [%(levelname)s] - %(message)s - %(name)s - "

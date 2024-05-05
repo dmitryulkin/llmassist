@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from src.exceptions import CustomError
-from src.utils.context import ctx
+from src.context import ctx
 from src.utils.loggers import get_logger
 from src.utils.proxies.provider import ProxyProvider
 from src.utils.proxies.tor_provider import TorProxyProvider

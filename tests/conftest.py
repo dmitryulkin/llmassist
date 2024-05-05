@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pytest import FixtureRequest, MonkeyPatch
 
-from src.utils.context import ctx
+from src.context import ctx
 from tests.mocks import SettingsMock
 
 

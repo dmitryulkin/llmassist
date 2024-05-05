@@ -1,15 +1,19 @@
 import logging
+from types import NoneType
 
 import pytest
+from pytest import CaptureFixture, LogCaptureFixture
 
-from src.utils.context import ctx
+from src.context import ctx
 from src.utils.loggers import get_logger
 
 
 @pytest.mark.parametrize(
     "patch_settings", [{"LOG_LEVEL": logging.INFO}], indirect=True
 )
-def test_console_only_logging(patch_settings, caplog):
+def test_console_only_logging(
+    patch_settings: NoneType, caplog: LogCaptureFixture
+):
     logger = get_logger(__name__)
     logger.info("TEST INFO")
     logger.debug("TEST DEBUG")
@@ -50,11 +54,16 @@ def test_console_only_logging(patch_settings, caplog):
     ],
     indirect=["patch_settings"],
 )
-def test_console_and_file_logging(patch_settings, result, capsys):
+def test_console_and_file_logging(
+    patch_settings: NoneType,
+    result: dict[str, bool],
+    capsys: CaptureFixture[str],
+):
+
     logger = get_logger(__name__)
     logger.info("TEST INFO")
     logger.warning("TEST WARNING")
-    _, err = capsys.readouterr()
+    err: str = capsys.readouterr().err
     assert ("TEST INFO" in err) is result["CONSOLE_INFO"]
     assert ("TEST WARNING" in err) is result["CONSOLE_WARN"]
     # check file logging
