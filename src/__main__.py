@@ -23,12 +23,12 @@ def init_context() -> None:
 def init_ui() -> None:
     try:
         if ctx.settings.TGBOT_TOKEN:
-            logger.info("Init aiogram bot")
+            logger.info("Aiogram bot init...")
             from src.aiogram_bot.bot import AIOgramBot
 
             global aiogram_bot
             aiogram_bot = AIOgramBot()
-            logger.info("Init aiogram bot done")
+            logger.info("Aiogram bot init done")
         else:
             logger.error("There are no active interfaces for usage")
     except Exception:
@@ -57,11 +57,11 @@ async def console_mgmt() -> None:
 async def main() -> None:
     init_context()
     init_ui()
-    logger.info("Start app")
+    logger.info("App starting...")
     async with asyncio.TaskGroup() as tg:
         tg.create_task(console_mgmt())
         tg.create_task(aiogram_bot.start())
-    logger.info("Stop app")
+    logger.info("App stopped")
 
 
 if __name__ == "__main__":

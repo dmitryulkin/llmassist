@@ -22,7 +22,7 @@ class Context(BaseModel):
         from src.utils.loggers import get_logger
 
         logger: Logger = get_logger(__name__)
-        logger.info("Init context")
+        logger.info("Context init...")
 
         # ProxyManager uses ctx.settings and imported here
         # to avoid circular import
@@ -30,7 +30,7 @@ class Context(BaseModel):
 
         self.proxy_manager = ProxyManager()
 
-        logger.info("Init context done")
+        logger.info("Context init done")
 
 
 ctx: Context = Context()
