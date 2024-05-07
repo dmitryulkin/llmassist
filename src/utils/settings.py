@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     USE_TOR: bool = False
     TOR_SOCKS5_PORT: PositiveInt | None = None
 
+    # tgbot settings
+    TGBOT_TOKEN: str | None = None
+
     @field_validator("LOG_LEVEL", "LOG_FILE_LEVEL", mode="before")
     @classmethod
     def transform_log_level_str_to_int(
