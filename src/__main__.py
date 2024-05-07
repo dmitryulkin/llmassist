@@ -2,20 +2,19 @@ import asyncio
 import sys
 import traceback
 
-from src.context import ctx
-from src.utils.loggers import get_logger
+from loguru import logger
 
-logger = None
+from src.aiogram_bot.bot import AIOgramBot
+from src.context import ctx
+
 aiogram_bot = None
 
 
 def init_context() -> None:
     try:
         ctx.init()
-        global logger
-        logger = get_logger(__name__)
     except Exception:
-        print("Error during application init:")
+        logger.error("Error during application init:")
         traceback.print_exc()
         exit(-1)
 
@@ -24,8 +23,6 @@ def init_ui() -> None:
     try:
         if ctx.settings.TGBOT_TOKEN:
             logger.info("Aiogram bot init...")
-            from src.aiogram_bot.bot import AIOgramBot
-
             global aiogram_bot
             aiogram_bot = AIOgramBot()
             logger.info("Aiogram bot init done")

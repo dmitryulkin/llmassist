@@ -1,20 +1,20 @@
-import logging
 from types import NoneType
 
 import pytest
+from loguru import logger
 from pytest import CaptureFixture, LogCaptureFixture
 
 from src.context import ctx
-from src.utils.loggers import get_logger
 
 
 @pytest.mark.parametrize(
-    "patch_settings", [{"LOG_LEVEL": logging.INFO}], indirect=True
+    "patch_settings", [{"LOG_LEVEL": "INFO"}], indirect=True
 )
 def test_console_only_logging(
     patch_settings: NoneType, caplog: LogCaptureFixture
 ):
-    logger = get_logger(__name__)
+    ctx.init()
+    caplog.set_level(ctx.settings.LOG_LEVEL)
     logger.info("TEST INFO")
     logger.debug("TEST DEBUG")
     assert "TEST DEBUG" not in caplog.text and "TEST INFO" in caplog.text
@@ -27,9 +27,9 @@ def test_console_only_logging(
     [
         (
             {
-                "LOG_LEVEL": logging.WARNING,
+                "LOG_LEVEL": "WARNING",
                 "LOG_TO_FILE": True,
-                "LOG_FILE_LEVEL": logging.INFO,
+                "LOG_FILE_LEVEL": "INFO",
             },
             {
                 "CONSOLE_INFO": False,
@@ -40,9 +40,9 @@ def test_console_only_logging(
         ),
         (
             {
-                "LOG_LEVEL": logging.INFO,
+                "LOG_LEVEL": "INFO",
                 "LOG_TO_FILE": True,
-                "LOG_FILE_LEVEL": logging.WARNING,
+                "LOG_FILE_LEVEL": "WARNING",
             },
             {
                 "CONSOLE_INFO": True,
@@ -59,13 +59,12 @@ def test_console_and_file_logging(
     result: dict[str, bool],
     capsys: CaptureFixture[str],
 ):
-
-    logger = get_logger(__name__)
+    ctx.init()
     logger.info("TEST INFO")
     logger.warning("TEST WARNING")
-    err: str = capsys.readouterr().err
-    assert ("TEST INFO" in err) is result["CONSOLE_INFO"]
-    assert ("TEST WARNING" in err) is result["CONSOLE_WARN"]
+    out: str = capsys.readouterr().out
+    assert ("TEST INFO" in out) is result["CONSOLE_INFO"]
+    assert ("TEST WARNING" in out) is result["CONSOLE_WARN"]
     # check file logging
     with open(ctx.settings.LOG_FILE, "r") as log_file:
         read_log = log_file.read()

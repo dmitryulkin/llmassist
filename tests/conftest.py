@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import pytest
+from _pytest.logging import LogCaptureFixture
+from loguru import logger
 from pytest import FixtureRequest, MonkeyPatch
 
 from src.context import ctx
@@ -8,9 +10,27 @@ from tests.mocks import SettingsMock
 
 
 @pytest.fixture
+def caplog(caplog: LogCaptureFixture):
+    """override caplog to use loguru"""
+    handler_id = logger.add(
+        caplog.handler,
+        format="{message}",
+        level=0,
+        filter=lambda record: record["level"].no >= caplog.handler.level,
+        # Set to 'True' if your test is spawning child processes.
+        enqueue=False,
+    )
+    yield caplog
+    logger.remove(handler_id)
+
+
+@pytest.fixture
 def patch_settings(
     tmp_path: Path, request: FixtureRequest, monkeypatch: MonkeyPatch
 ) -> None:
+    """patch ctx.settings with value from request param
+    - log to tmp_path
+    """
     settings = SettingsMock()
     settings.LOG_FILE = tmp_path / settings.LOG_FILE
 

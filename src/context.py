@@ -1,6 +1,7 @@
-from logging import Logger
+import sys
 from typing import Any
 
+from loguru import logger
 from pydantic import BaseModel
 
 from src.utils.settings import Settings
@@ -18,10 +19,8 @@ class Context(BaseModel):
         if not self.settings:
             self.settings = Settings()
 
-        # Logger uses ctx.settings and imported here to avoid circular import
-        from src.utils.loggers import get_logger
+        self.init_loggers()
 
-        logger: Logger = get_logger(__name__)
         logger.info("Context init...")
 
         # ProxyManager uses ctx.settings and imported here
@@ -31,6 +30,32 @@ class Context(BaseModel):
         self.proxy_manager = ProxyManager()
 
         logger.info("Context init done")
+
+    def init_loggers(self):
+        """
+        Initialize loggers:
+        - sys.stdout
+        - LOG_FILE
+        """
+        format = (
+            "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> "
+            "- [<level>{level: <8}</level>] - <level>{message}</level> "
+            "- <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan>"
+        )
+        logger.remove(0)
+        logger.add(sys.stdout, level=self.settings.LOG_LEVEL, format=format)
+
+        if self.settings.LOG_TO_FILE:
+            file_format = (
+                "{time} - [{level: <8}] - {message} - {name}:{function}:{line}"
+            )
+            logger.add(
+                self.settings.LOG_FILE,
+                level=self.settings.LOG_FILE_LEVEL,
+                format=file_format,
+                rotation="100 KB",
+                compression="zip",
+            )
 
 
 ctx: Context = Context()

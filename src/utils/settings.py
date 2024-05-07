@@ -1,13 +1,14 @@
-import logging
 from pathlib import Path
-from typing import Tuple, Type
+from typing import Literal, Tuple, Type
 
-from pydantic import PositiveInt, ValidationInfo, field_validator
+from pydantic import PositiveInt
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
     SettingsConfigDict,
 )
+
+type LogLevelsAllowed = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 
 
 class Settings(BaseSettings):
@@ -15,47 +16,17 @@ class Settings(BaseSettings):
 
     # .env
     # general settings
-    LOG_LEVEL: int = logging.DEBUG
+    LOG_LEVEL: LogLevelsAllowed = "DEBUG"
     LOG_TO_FILE: bool = False
-    LOG_FILE: Path = Path("llmassist.log")
-    LOG_FILE_LEVEL: int = logging.DEBUG
+    LOG_FILE: Path = Path("logs/llmassist.log")
+    LOG_FILE_LEVEL: LogLevelsAllowed = "DEBUG"
 
     # proxy settings
     # tor
-    USE_TOR: bool = False
     TOR_SOCKS5_PORT: PositiveInt | None = None
 
     # tgbot settings
     TGBOT_TOKEN: str | None = None
-
-    @field_validator("LOG_LEVEL", "LOG_FILE_LEVEL", mode="before")
-    @classmethod
-    def transform_log_level_str_to_int(
-        cls, value: int | str, info: ValidationInfo
-    ) -> int:
-        value = value.casefold() if type(value) is str else value
-        match value:
-            case "debug" | logging.DEBUG:
-                return logging.DEBUG
-            case "info":
-                return logging.INFO
-            case "warn" | "warning":
-                return logging.WARNING
-            case "error":
-                return logging.ERROR
-            case _:
-                raise ValueError(f".env {info.field_name} is incorrect")
-
-    @field_validator("TOR_SOCKS5_PORT", mode="after")
-    @classmethod
-    def check_tor_port(
-        cls, value: PositiveInt | None, info: ValidationInfo
-    ) -> PositiveInt | None:
-        if info.data["USE_TOR"]:
-            assert (
-                value
-            ), "TOR_SOCKS5_PORT is required because of .env USE_TOR=True"
-        return value
 
     # read only .env and secrets
     @classmethod

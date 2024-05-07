@@ -1,23 +1,26 @@
+from typing import Annotated, Any
+
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
+from loguru import logger
+from pydantic import BaseModel
 
 from src.context import ctx
 from src.exceptions import CustomError
-from src.utils.loggers import get_logger
-
-logger = get_logger(__name__)
 
 
-class AIOgramBot:
+class AIOgramBot(BaseModel):
+    bot: Annotated[Any, Bot]
+    dp: Annotated[Any, Dispatcher]
+
     def __init__(self) -> None:
         if not ctx.settings.TGBOT_TOKEN:
             raise CustomError("TGBOT_TOKEN not specified")
-
-        self.bot = Bot(
-            token=ctx.settings.TGBOT_TOKEN, parse_mode=ParseMode.HTML
+        super().__init__(
+            bot=Bot(token=ctx.settings.TGBOT_TOKEN, parse_mode=ParseMode.HTML),
+            dp=Dispatcher(storage=MemoryStorage()),
         )
-        self.dp = Dispatcher(storage=MemoryStorage())
 
     async def start(self) -> None:
         self.dp.startup.register(self.on_startup)

@@ -16,4 +16,7 @@ class TorProxyProvider(ProxyProvider):
         return f"socks5://{creds}@localhost:{self.port}"
 
     def is_alive(self) -> bool:
-        raise NotImplementedError
+        try:
+            raise NotImplementedError
+        except Exception:
+            return False
