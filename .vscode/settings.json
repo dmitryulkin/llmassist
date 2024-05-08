@@ -6,5 +6,10 @@
   //],
   "python.testing.cwd": "${workspaceFolder}/tests", // Specifies a working directory for tests
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "material-icon-theme.folders.associations": {
+    "aiogram_bot": "robot",
+    "cov": "coverage",
+    "tor-lyrebird": "git"
+  }
 }
