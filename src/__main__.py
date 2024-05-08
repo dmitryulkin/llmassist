@@ -1,6 +1,5 @@
 import asyncio
 import sys
-import traceback
 
 from loguru import logger
 
@@ -10,28 +9,14 @@ from src.context import ctx
 aiogram_bot = None
 
 
-def init_context() -> None:
-    try:
-        ctx.init()
-    except Exception:
-        logger.error("Error during application init:")
-        traceback.print_exc()
-        exit(-1)
-
-
 def init_ui() -> None:
-    try:
-        if ctx.settings.TGBOT_TOKEN:
-            logger.info("Aiogram bot init...")
-            global aiogram_bot
-            aiogram_bot = AIOgramBot()
-            logger.info("Aiogram bot init done")
-        else:
-            logger.error("There are no active interfaces for usage")
-    except Exception:
-        print("Error during user interfaces init:")
-        traceback.print_exc()
-        exit(-1)
+    if ctx.settings.TGBOT_TOKEN:
+        logger.info("Aiogram bot init...")
+        global aiogram_bot
+        aiogram_bot = AIOgramBot()
+        logger.info("Aiogram bot init done")
+    else:
+        logger.error("There are no active interfaces for usage")
 
 
 async def console_mgmt() -> None:
@@ -52,8 +37,14 @@ async def console_mgmt() -> None:
 
 
 async def main() -> None:
-    init_context()
-    init_ui()
+    with logger.catch(
+        level="CRITICAL",
+        message="Error during app context init",
+        onerror=lambda _: sys.exit(-1),
+    ):
+        ctx.init()
+        init_ui()
+
     logger.info("App starting...")
     async with asyncio.TaskGroup() as tg:
         tg.create_task(console_mgmt())
