@@ -1,7 +1,7 @@
 from loguru import logger
 from pydantic import BaseModel
 
-from src.context import ctx
+from src.services import srv
 from src.utils.proxies.provider import ProxyProvider
 from src.utils.proxies.tor_provider import TorProxyProvider
 
@@ -10,7 +10,7 @@ class ProxyManager(BaseModel):
     providers: list[ProxyProvider] = []
 
     def _config_tor_provider(self) -> None:
-        TOR_PORT = ctx.settings.TOR_SOCKS5_PORT
+        TOR_PORT = srv.settings.TOR_SOCKS5_PORT
         if not TOR_PORT:
             return
         logger.info("Tor provider init...")

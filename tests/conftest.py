@@ -5,7 +5,7 @@ from _pytest.logging import LogCaptureFixture
 from loguru import logger
 from pytest import FixtureRequest, MonkeyPatch
 
-from src.context import ctx
+from src.services import srv
 from tests.mocks import SettingsMock
 
 
@@ -50,4 +50,4 @@ def patch_settings(
         # set key
         setattr(settings, key, val)
 
-    monkeypatch.setattr(ctx, "settings", settings)
+    monkeypatch.setattr(srv, "settings", settings)

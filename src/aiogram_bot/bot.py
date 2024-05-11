@@ -6,7 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from loguru import logger
 from pydantic import BaseModel
 
-from src.context import ctx
+from src.services import srv
 from src.exceptions import CustomError
 
 
@@ -15,10 +15,10 @@ class AIOgramBot(BaseModel):
     dp: Annotated[Any, Dispatcher]
 
     def __init__(self) -> None:
-        if not ctx.settings.TGBOT_TOKEN:
+        if not srv.settings.TGBOT_TOKEN:
             raise CustomError("TGBOT_TOKEN not specified")
         super().__init__(
-            bot=Bot(token=ctx.settings.TGBOT_TOKEN, parse_mode=ParseMode.HTML),
+            bot=Bot(token=srv.settings.TGBOT_TOKEN, parse_mode=ParseMode.HTML),
             dp=Dispatcher(storage=MemoryStorage()),
         )
 

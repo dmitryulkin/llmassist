@@ -1,17 +1,21 @@
 import sys
-from typing import Any
+from dataclasses import dataclass
 
 from loguru import logger
-from pydantic import BaseModel
 
 from src.utils.settings import Settings
 
 
-class Context(BaseModel):
-    """Application global resources environment"""
+@dataclass
+class Services:
+    """Application global resources environment.
+    Main reason for this classis the opportunity to
+    substitute global resources on testing.
+    """
 
-    settings: Settings | None = None
-    proxy_manager: Any = None
+    settings = None
+    proxy_manager = None
+    aiogram_bot = None
 
     def init(self) -> None:
         """Explicit initialization"""
@@ -21,15 +25,10 @@ class Context(BaseModel):
 
         self.init_loggers()
 
-        logger.info("Context init...")
-
-        # ProxyManager uses ctx.settings and imported here
-        # to avoid circular import
-        from src.utils.proxies.manager import ProxyManager
-
-        self.proxy_manager = ProxyManager()
-
-        logger.info("Context init done")
+        logger.info("Config init...")
+        self.init_proxies()
+        self.init_aiogram_bot()
+        logger.info("Config init done")
 
     def init_loggers(self):
         """
@@ -57,5 +56,18 @@ class Context(BaseModel):
                 compression="zip",
             )
 
+    def init_proxies(self) -> None:
+        from src.utils.proxies.manager import ProxyManager
 
-ctx: Context = Context()
+        self.proxy_manager = ProxyManager()
+
+    def init_aiogram_bot(self) -> None:
+        if srv.settings.TGBOT_TOKEN:
+            from src.aiogram_bot.bot import AIOgramBot
+
+            logger.info("Aiogram bot init...")
+            self.aiogram_bot = AIOgramBot()
+            logger.info("Aiogram bot init done")
+
+
+srv: Services = Services()

@@ -3,20 +3,7 @@ import sys
 
 from loguru import logger
 
-from src.aiogram_bot.bot import AIOgramBot
-from src.context import ctx
-
-aiogram_bot = None
-
-
-def init_ui() -> None:
-    if ctx.settings.TGBOT_TOKEN:
-        logger.info("Aiogram bot init...")
-        global aiogram_bot
-        aiogram_bot = AIOgramBot()
-        logger.info("Aiogram bot init done")
-    else:
-        logger.error("There are no active interfaces for usage")
+from src.services import srv
 
 
 async def console_mgmt() -> None:
@@ -28,7 +15,8 @@ async def console_mgmt() -> None:
         inp = (await asyncio.to_thread(sys.stdin.readline)).rstrip("\n")
         match inp:
             case "stop" | "close" | "0":
-                await aiogram_bot.dp.stop_polling()
+                if srv.aiogram_bot:
+                    await srv.aiogram_bot.dp.stop_polling()
                 break
             case "help" | "?":
                 print_red("stop | close | 0 - stop app")
@@ -42,13 +30,13 @@ async def main() -> None:
         message="Error during app context init",
         onerror=lambda _: sys.exit(-1),
     ):
-        ctx.init()
-        init_ui()
+        srv.init()
 
     logger.info("App starting...")
     async with asyncio.TaskGroup() as tg:
         tg.create_task(console_mgmt())
-        tg.create_task(aiogram_bot.start())
+        if srv.aiogram_bot:
+            tg.create_task(srv.aiogram_bot.start())
     logger.info("App stopped")
 
 

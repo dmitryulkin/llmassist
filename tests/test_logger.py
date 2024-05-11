@@ -4,7 +4,7 @@ import pytest
 from loguru import logger
 from pytest import CaptureFixture, LogCaptureFixture
 
-from src.context import ctx
+from src.services import srv
 
 
 @pytest.mark.parametrize(
@@ -13,13 +13,13 @@ from src.context import ctx
 def test_console_only_logging(
     patch_settings: NoneType, caplog: LogCaptureFixture
 ):
-    ctx.init()
-    caplog.set_level(ctx.settings.LOG_LEVEL)
+    srv.init()
+    caplog.set_level(srv.settings.LOG_LEVEL)
     logger.info("TEST INFO")
     logger.debug("TEST DEBUG")
     assert "TEST DEBUG" not in caplog.text and "TEST INFO" in caplog.text
     # here should be no log file
-    assert not ctx.settings.LOG_FILE.is_file()
+    assert not srv.settings.LOG_FILE.is_file()
 
 
 @pytest.mark.parametrize(
@@ -59,14 +59,14 @@ def test_console_and_file_logging(
     result: dict[str, bool],
     capsys: CaptureFixture[str],
 ):
-    ctx.init()
+    srv.init()
     logger.info("TEST INFO")
     logger.warning("TEST WARNING")
     out: str = capsys.readouterr().out
     assert ("TEST INFO" in out) is result["CONSOLE_INFO"]
     assert ("TEST WARNING" in out) is result["CONSOLE_WARN"]
     # check file logging
-    with open(ctx.settings.LOG_FILE, "r") as log_file:
+    with open(srv.settings.LOG_FILE, "r") as log_file:
         read_log = log_file.read()
         assert ("TEST INFO" in read_log) is result["FILE_INFO"]
         assert ("TEST WARNING" in read_log) is result["FILE_WARN"]
