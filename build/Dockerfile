@@ -32,7 +32,8 @@ RUN apt-get install -y git && \
     apt-get install -y bsdmainutils && \
     # netcat-traditional for nc
     apt-get install -y netcat-traditional && \
-    apt-get install -y curl
+    apt-get install -y curl && \
+    apt-get install -y sqlite3
 
 # [Optional] Add sudo support.
 RUN apt-get install -y sudo \

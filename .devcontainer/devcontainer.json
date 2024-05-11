@@ -22,7 +22,8 @@
             "path": "/usr/bin/bash"
           }
         },
-        "shellformat.path": "/usr/bin/shfmt"
+        "shellformat.path": "/usr/bin/shfmt",
+        "sqlite.sqlite3": "/usr/bin/sqlite3"
       },
       "extensions": [
         // python
@@ -45,7 +46,9 @@
         "ms-azuretools.vscode-docker",
         // GIT
         "mhutchie.git-graph",
-        "GitHub.vscode-pull-request-github"
+        "GitHub.vscode-pull-request-github",
+        //SQLite
+        "alexcvzz.vscode-sqlite"
       ]
     }
   },

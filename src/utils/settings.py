@@ -11,7 +11,18 @@ from pydantic_settings import (
 type LogLevelsAllowed = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 
 
-class Settings(BaseSettings):
+class DBSetiings(BaseSettings):
+    # DB settings
+    SQLITE_DB_FILE: Path | None = None
+
+    @property
+    def DATABASE_URL(self) -> str:
+        if self.SQLITE_DB_FILE:
+            return f"sqlite+aiosqlite:///{self.SQLITE_DB_FILE}"
+        raise ValueError("DB URL is undefined")
+
+
+class Settings(DBSetiings):
     # secrets
 
     # .env
@@ -27,6 +38,9 @@ class Settings(BaseSettings):
 
     # tgbot settings
     TGBOT_TOKEN: str | None = None
+
+    # DEBUG mode
+    DEBUG: bool = False
 
     # read only .env and secrets
     @classmethod

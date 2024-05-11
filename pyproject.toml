@@ -12,9 +12,11 @@ python = "^3.12"
 pydantic = "^2.6.4"
 pydantic-settings = "^2.2.1"
 aiogram = "^3.5.0"
-requests = {extras = ["socks"], version = "^2.31.0"}
 g4f = {extras = ["all"], version = "^0.2.6.2"}
 loguru = "^0.7.2"
+sqlmodel = "^0.0.18"
+aiosqlite = "^0.20.0"
+alembic = "^1.13.1"
 
 [tool.poetry.group.dev]
 optional=true
