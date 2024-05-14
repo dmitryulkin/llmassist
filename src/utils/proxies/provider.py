@@ -11,5 +11,5 @@ class ProxyProvider(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def is_alive(self) -> bool:
+    def check(self) -> None:
         pass

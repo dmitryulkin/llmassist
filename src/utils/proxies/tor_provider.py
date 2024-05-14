@@ -15,8 +15,5 @@ class TorProxyProvider(ProxyProvider):
         creds = str(random.randint(10000, 0x7FFFFFFF)) + ":" + "passwd"
         return f"socks5://{creds}@localhost:{self.port}"
 
-    def is_alive(self) -> bool:
-        try:
-            raise NotImplementedError
-        except Exception:
-            return False
+    def check(self) -> None:
+        raise NotImplementedError

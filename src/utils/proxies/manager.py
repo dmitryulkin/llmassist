@@ -15,10 +15,11 @@ class ProxyManager(BaseModel):
             return
         logger.info("Tor provider init...")
         tor_provider: TorProxyProvider = TorProxyProvider(port=TOR_PORT)
-        if tor_provider.is_alive():
+        try:
+            tor_provider.check()
             self.providers.append(tor_provider)
             logger.info("Tor provider init done")
-        else:
+        except Exception:
             logger.error("Tor provider init failed: is not alive")
 
     def __init__(self) -> None:
