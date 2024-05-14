@@ -1,9 +1,11 @@
+import copy
 from pathlib import Path
+from types import NoneType
 
 import pytest
 from _pytest.logging import LogCaptureFixture
 from loguru import logger
-from pytest import FixtureRequest, MonkeyPatch
+from pytest import FixtureRequest
 
 from src.services import srv
 from tests.mocks import SettingsMock
@@ -25,9 +27,21 @@ def caplog(caplog: LogCaptureFixture):
 
 
 @pytest.fixture
+def save_loguru_state():
+    """loguru logger is the global object and there is no convinient method
+    to manage handlers when settings of logging changed from test to test.
+    This fixture saves handlers before some changes of logger settings and
+    restores them on exit"""
+    _core = getattr(logger, "_core")
+    handlers = copy.copy(getattr(_core, "handlers"))
+    yield
+    setattr(_core, "handlers", handlers)
+
+
+@pytest.fixture
 def patch_settings(
-    tmp_path: Path, request: FixtureRequest, monkeypatch: MonkeyPatch
-) -> None:
+    save_loguru_state: NoneType, tmp_path: Path, request: FixtureRequest
+):
     """patch ctx.settings with value from request param
     - log to tmp_path
     """
@@ -40,14 +54,9 @@ def patch_settings(
         # check key settings exists
         if not hasattr(settings, key):
             raise ValueError(f"Unknown setting: {key}")
-        # check settings val type is appropriate
-        expected_type = getattr(settings, key).__class__
-        if not isinstance(val, expected_type):
-            raise ValueError(
-                f"Invalid type for {key}: {val.__class__} instead "
-                "of {expected_type}"
-            )
         # set key
         setattr(settings, key, val)
-
-    monkeypatch.setattr(srv, "settings", settings)
+    saved = srv.settings
+    srv.settings = settings
+    yield
+    srv.settings = saved

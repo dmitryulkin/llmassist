@@ -34,6 +34,7 @@ markers = [
 ]
 xfail_strict = true
 norecursedirs = ".* *.egg dist build src tor-lyrebird"
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 branch = true

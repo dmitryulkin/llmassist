@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
 from src.utils.settings import Settings
 
 
-class SettingsMock(Settings):
+class SettingsMock(Settings, validate_assignment=True):
     # read only __init__ parameters
     @classmethod
     def settings_customise_sources(
