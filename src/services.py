@@ -28,7 +28,7 @@ class Services:
 
         logger.info("Config init...")
         await self.init_db()
-        self.init_proxies()
+        await self.init_proxies()
         self.init_aiogram_bot()
         logger.info("Config init done")
 
@@ -64,10 +64,11 @@ class Services:
         self.db = DB()
         await self.db.check()
 
-    def init_proxies(self) -> None:
+    async def init_proxies(self) -> None:
         from src.utils.proxies.manager import ProxyManager
 
         self.proxy_manager = ProxyManager()
+        await self.proxy_manager.init()
 
     def init_aiogram_bot(self) -> None:
         if srv.settings.TGBOT_TOKEN:

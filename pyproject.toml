@@ -17,6 +17,8 @@ loguru = "^0.7.2"
 sqlmodel = "^0.0.18"
 aiosqlite = "^0.20.0"
 alembic = "^1.13.1"
+aiohttp = "^3.9.5"
+aiohttp-socks = "^0.8.4"
 
 [tool.poetry.group.dev]
 optional=true

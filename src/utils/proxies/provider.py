@@ -7,9 +7,9 @@ class ProxyProvider(BaseModel, ABC):
     rate: int = 0
 
     @abstractmethod
-    def get_address(self) -> str:
+    async def check(self) -> bool:
         pass
 
     @abstractmethod
-    def check(self) -> None:
+    async def get_address(self) -> str:
         pass

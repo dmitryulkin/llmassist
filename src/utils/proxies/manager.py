@@ -9,29 +9,22 @@ from src.utils.proxies.tor_provider import TorProxyProvider
 class ProxyManager(BaseModel):
     providers: list[ProxyProvider] = []
 
-    def _config_tor_provider(self) -> None:
-        TOR_PORT = srv.settings.TOR_SOCKS5_PORT
-        if not TOR_PORT:
-            return
-        logger.info("Tor provider init...")
-        tor_provider: TorProxyProvider = TorProxyProvider(port=TOR_PORT)
-        try:
-            tor_provider.check()
-            self.providers.append(tor_provider)
-            logger.info("Tor provider init done")
-        except Exception:
-            logger.error("Tor provider init failed: is not alive")
-
-    def __init__(self) -> None:
+    async def init(self):
         logger.info("ProxyManager init...")
-        super().__init__()  # BaseModel functionality
 
-        self._config_tor_provider()
+        # providers
+        if srv.settings.TOR_SOCKS5_PORT is not None:
+            tor_provider = TorProxyProvider(port=srv.settings.TOR_SOCKS5_PORT)
+            self._init_provider(tor_provider)
 
         # is there any provider
         if len(self.providers) == 0:
             logger.warning("There are no active proxy providers")
         logger.info("ProxyManager init done")
+
+    def _init_provider(self, provider: ProxyProvider):
+        self.providers.append(provider)
+        logger.info(f"{provider.__class__.__name__} init done")
 
     def get_provider(self) -> ProxyProvider:
         return max(self.providers, key=lambda x: x.rate)
