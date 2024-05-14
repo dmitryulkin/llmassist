@@ -30,7 +30,7 @@ async def main() -> None:
         message="Error during app context init",
         onerror=lambda _: sys.exit(-1),
     ):
-        srv.init()
+        await srv.init()
 
     logger.info("App starting...")
     async with asyncio.TaskGroup() as tg:

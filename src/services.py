@@ -14,10 +14,11 @@ class Services:
     """
 
     settings = None
+    db = None
     proxy_manager = None
     aiogram_bot = None
 
-    def init(self) -> None:
+    async def init(self) -> None:
         """Explicit initialization"""
 
         if not self.settings:
@@ -26,6 +27,7 @@ class Services:
         self.init_loggers()
 
         logger.info("Config init...")
+        await self.init_db()
         self.init_proxies()
         self.init_aiogram_bot()
         logger.info("Config init done")
@@ -55,6 +57,12 @@ class Services:
                 rotation="100 KB",
                 compression="zip",
             )
+
+    async def init_db(self) -> None:
+        from src.db.db import DB
+
+        self.db = DB()
+        await self.db.check()
 
     def init_proxies(self) -> None:
         from src.utils.proxies.manager import ProxyManager
