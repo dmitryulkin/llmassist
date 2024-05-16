@@ -1,10 +1,9 @@
-from types import NoneType
-
 import pytest
 from loguru import logger
 from pytest import CaptureFixture, LogCaptureFixture
 
 from src.services import srv
+from src.utils.settings import Settings
 from tests.mocks import SettingsMock
 
 
@@ -38,24 +37,22 @@ async def test_invalid_db_settings() -> None:
         settings.DATABASE_URL
 
 
-@pytest.mark.parametrize(
-    "patch_settings", [{"LOG_LEVEL": "INFO"}], indirect=True
-)
+@pytest.mark.parametrize("settings", [{"LOG_LEVEL": "INFO"}], indirect=True)
 def test_console_only_logging_settings(
-    patch_settings: NoneType,
-    caplog: LogCaptureFixture,
+    settings: Settings, caplog: LogCaptureFixture
 ):
-    caplog.set_level(srv.settings.LOG_LEVEL)
-    srv.init_loggers()
+    caplog.set_level(settings.LOG_LEVEL)
+
+    srv.init_loggers(settings)
     logger.info("TEST INFO")
     logger.debug("TEST DEBUG")
     assert "TEST DEBUG" not in caplog.text and "TEST INFO" in caplog.text
     # here should be no log file
-    assert not srv.settings.LOG_FILE.is_file()
+    assert not settings.LOG_FILE.is_file()
 
 
 @pytest.mark.parametrize(
-    "patch_settings, result",
+    "settings, result",
     [
         (
             {
@@ -84,21 +81,22 @@ def test_console_only_logging_settings(
             },
         ),
     ],
-    indirect=["patch_settings"],
+    indirect=["settings"],
 )
 def test_console_and_file_logging_settings(
-    patch_settings: NoneType,
+    settings: Settings,
     result: dict[str, bool],
     capsys: CaptureFixture[str],
 ):
-    srv.init_loggers()
+    srv.init_loggers(settings)
+
     logger.info("TEST INFO")
     logger.warning("TEST WARNING")
     out: str = capsys.readouterr().out
     assert ("TEST INFO" in out) is result["CONSOLE_INFO"]
     assert ("TEST WARNING" in out) is result["CONSOLE_WARN"]
     # check file logging
-    with open(srv.settings.LOG_FILE, "r") as log_file:
+    with open(settings.LOG_FILE, "r") as log_file:
         read_log = log_file.read()
         assert ("TEST INFO" in read_log) is result["FILE_INFO"]
         assert ("TEST WARNING" in read_log) is result["FILE_WARN"]

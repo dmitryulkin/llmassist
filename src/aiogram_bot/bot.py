@@ -1,35 +1,45 @@
-from typing import Annotated, Any
-
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from loguru import logger
 from pydantic import BaseModel
 
-from src.services import srv
-from src.exceptions import CustomError
+from src.utils.settings import Settings
 
 
 class AIOgramBot(BaseModel):
-    bot: Annotated[Any, Bot]
-    dp: Annotated[Any, Dispatcher]
+    settings: Settings
+    _bot: Bot | None = None
+    _dp: Dispatcher | None = None
 
-    def __init__(self) -> None:
-        if not srv.settings.TGBOT_TOKEN:
-            raise CustomError("TGBOT_TOKEN not specified")
-        super().__init__(
-            bot=Bot(token=srv.settings.TGBOT_TOKEN, parse_mode=ParseMode.HTML),
-            dp=Dispatcher(storage=MemoryStorage()),
+    @property
+    def bot(self) -> Bot:
+        assert self._bot is not None, "Aiogram Bot not init"
+        return self._bot
+
+    @property
+    def dp(self) -> Dispatcher:
+        assert self._dp is not None, "Aiogram Dispatcher not init"
+        return self._dp
+
+    async def init(self) -> None:
+        logger.info("Aiogram bot init...")
+        if self.settings.TGBOT_TOKEN is None:
+            raise ValueError("TGBOT_TOKEN not specified")
+        self._bot = Bot(
+            token=self.settings.TGBOT_TOKEN, parse_mode=ParseMode.HTML
         )
+        self._dp = Dispatcher(storage=MemoryStorage())
+        logger.info("Aiogram bot init done")
 
     async def start(self) -> None:
-        self.dp.startup.register(self.on_startup)
-        self.dp.shutdown.register(self.on_shutdown)
+        self.dp.startup.register(self._on_startup)
+        self.dp.shutdown.register(self._on_shutdown)
         await self.dp.start_polling(
             self.bot, allowed_updates=self.dp.resolve_used_update_types()
         )
 
-    async def on_startup(self) -> None:
+    async def _on_startup(self) -> None:
         logger.info("Aiogram bot starting...")
 
         # TODO
@@ -60,7 +70,7 @@ class AIOgramBot(BaseModel):
 
         logger.info("Aiogram bot started")
 
-    async def on_shutdown(self) -> None:
+    async def _on_shutdown(self) -> None:
         logger.info("Aiogram bot stopping...")
 
         # TODO
