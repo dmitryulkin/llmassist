@@ -4,6 +4,12 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from loguru import logger
 from pydantic import BaseModel
 
+from src.aiogram_bot.handlers import get_handlers_router
+from src.aiogram_bot.keyboards.default_commands import (
+    remove_default_commands,
+    set_default_commands,
+)
+from src.aiogram_bot.middlewares import register_middlewares
 from src.utils.settings import Settings
 
 
@@ -42,10 +48,9 @@ class AIOgramBot(BaseModel):
     async def _on_startup(self) -> None:
         logger.info("Aiogram bot starting...")
 
-        # TODO
-        # register_middlewares(dp)
-        # dp.include_router(get_handlers_router())
-        # await set_default_commands(bot)
+        register_middlewares(self.dp)
+        self.dp.include_router(get_handlers_router())
+        await set_default_commands(self.bot)
 
         bot_info = await self.bot.get_me()
 
@@ -73,8 +78,7 @@ class AIOgramBot(BaseModel):
     async def _on_shutdown(self) -> None:
         logger.info("Aiogram bot stopping...")
 
-        # TODO
-        # await remove_default_commands(bot)
+        await remove_default_commands(self.bot)
 
         await self.dp.storage.close()
         await self.dp.fsm.storage.close()

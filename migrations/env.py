@@ -16,7 +16,9 @@ config = context.config
 srv.settings = Settings()
 
 # import models
-from src.db.models.aiogram_bot import *
+# order matters
+from src.db.models.user import *  # isort:skip
+from src.aiogram_bot.db.tg_user import *  # isort:skip
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

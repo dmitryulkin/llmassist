@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from src.aiogram_bot.bot import AIOgramBot
 from src.db.db import DB
+from src.utils.llms.llm import LLM
 from src.utils.proxies.manager import ProxyManager
 from src.utils.settings import Settings
 
@@ -17,6 +18,7 @@ class Services(BaseModel):
 
     _settings: Settings | None = None
     _db: DB | None = None
+    _llm: LLM | None = None
     _proxy: ProxyManager | None = None
     _aiogram_bot: AIOgramBot | None = None
 
@@ -33,6 +35,11 @@ class Services(BaseModel):
     def db(self) -> DB:
         assert self._db is not None, "App DB not init"
         return self._db
+
+    @property
+    def llm(self) -> LLM:
+        assert self._llm is not None, "LLM not init"
+        return self._llm
 
     @property
     def proxy(self) -> ProxyManager:
@@ -54,6 +61,7 @@ class Services(BaseModel):
 
         logger.info("Config init...")
         await self.init_db(self.settings)
+        self.init_llm(self.settings)
         await self.init_proxies(self.settings)
         await self.init_aiogram_bot(self.settings)
         logger.info("Config init done")
@@ -88,6 +96,10 @@ class Services(BaseModel):
         self._db = DB(settings=settings)
         await self.db.init()
         await self.db.check()
+
+    def init_llm(self, settings: Settings) -> None:
+        self._llm = LLM(settings=settings)
+        self.llm.init()
 
     async def init_proxies(self, settings: Settings) -> None:
         self._proxy = ProxyManager(settings=settings)
