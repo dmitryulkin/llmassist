@@ -4,3 +4,7 @@ class CustomError(Exception):
 
 class DBError(CustomError):
     pass
+
+
+class LLMError(CustomError):
+    pass

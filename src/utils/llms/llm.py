@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 
+from g4f.client import AsyncClient
 from g4f.Provider import ProviderType, __map__, __providers__
-from g4f.providers.base_provider import ProviderModelMixin
+from g4f.providers.base_provider import AbstractProvider, ProviderModelMixin
 from loguru import logger
 from pydantic import BaseModel
 
+from src.db.services.settings import LLMSettings
+from src.exceptions import LLMError
 from src.utils.settings import Settings
+
+type LLMChat = list[dict[str, str]]
 
 
 class LLMService(BaseModel, ABC):
@@ -17,14 +23,23 @@ class LLMService(BaseModel, ABC):
     @abstractmethod
     def get_providers(self) -> list[str]:
         """
-        Return a list of all working providers.
+        Returns a list of all working providers.
         """
         pass
 
     @abstractmethod
     def get_provider_models(self, provider_name: str) -> list[str]:
         """
-        Return a list of all working models for provider.
+        Returns a list of all working models for provider.
+        """
+        pass
+
+    @abstractmethod
+    async def chat_completion(
+        self, chat: LLMChat, config: dict[str, str]
+    ) -> str | AsyncIterator[str]:
+        """
+        Returns LLM answer as str or AsyncIterator[str] if stream is available
         """
         pass
 
@@ -53,11 +68,47 @@ class GPT4FreeLLMService(LLMService):
                 *(["gpt-3.5-turbo"] if provider.supports_gpt_35_turbo else []),
             ]
 
+    async def chat_completion(
+        self, chat: LLMChat, config: dict[str, str]
+    ) -> str | AsyncIterator[str]:
+        provider = __map__[config["provider"]]
+        client = AsyncClient(provider=provider)
+        stream = provider.supports_stream
+        # proxy_url = await srv.proxy.get_proxy_url()
+        completion = client.chat.completions.create(
+            model=config["model"],
+            messages=chat,  # type: ignore
+            stream=stream,
+            # proxy=proxy_url,
+        )
+
+        if isinstance(completion, AsyncIterator):
+
+            async def streaming():
+                async for chunk in completion:
+                    message = chunk.choices[0].delta.content
+                    if message:
+                        yield message
+
+            return streaming()
+        else:
+            responce = await completion
+            message = responce.choices[0].message.content
+            if not message:
+                raise LLMError("LLM returned empty result")
+            return message
+
     @staticmethod
     def is_appropriate(
         provider: ProviderType,
     ) -> bool:
-        return provider.working and not provider.needs_auth
+        return (
+            provider.working
+            and not provider.needs_auth
+            and isinstance(provider, type)
+            and issubclass(provider, AbstractProvider)
+            and not ("webdriver" in provider.get_parameters())
+        )
 
 
 class LLM(BaseModel):
@@ -68,3 +119,22 @@ class LLM(BaseModel):
         logger.info("LLM init...")
         self.services[GPT4FreeLLMService.get_name()] = GPT4FreeLLMService()
         logger.info("LLM init done")
+
+    async def chat_completion(
+        self, chat: LLMChat, llm_settings: LLMSettings
+    ) -> str | AsyncIterator[str]:
+        if (
+            GPT4FreeLLMService.get_name() == llm_settings.service
+            and llm_settings.provider
+            and llm_settings.model
+        ):
+            config = {
+                "provider": llm_settings.provider,
+                "model": llm_settings.model,
+            }
+            return await self.services[
+                GPT4FreeLLMService.get_name()
+            ].chat_completion(chat, config)
+        raise LLMError(
+            "LLM Chat Completion could not be created: check LLM settings"
+        )

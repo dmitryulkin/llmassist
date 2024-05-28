@@ -1,41 +1,26 @@
+from collections.abc import AsyncIterator
 from time import time
 
-import g4f.models
-from aiogram import F, Router, types
-from g4f.client import AsyncClient
-from g4f.Provider import Bing
-from g4f.providers.types import ProviderType
-from g4f.typing import Messages
+from aiogram import F, Router
+from aiogram.types import Message
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from src.exceptions import CustomError
+from src.aiogram_bot.db.tg_user import get_user_id
+from src.db.services.settings import get_user_llm_settings
 from src.services import srv
 
 router = Router(name="messages")
 
 
-async def llm_completion(
-    chat_messages: Messages, provider: ProviderType, stream: bool = False
-):
-    proxy_url = await srv.proxy.get_proxy_url()
-    client = AsyncClient(
-        provider=provider,
-        # proxies={"http": proxy_url, "https": proxy_url},
-    )
-    completion = client.chat.completions.create(
-        model=g4f.models.default.name,
-        messages=chat_messages,
-        stream=stream,
-        proxy=proxy_url,
-    )
-    return completion
-
-
 @router.message(F.text)
-async def message_handler(message: types.Message) -> None:
-    if message.text is None:
-        raise CustomError("Message with None text received")
+async def message_handler(message: Message, session: AsyncSession) -> None:
+    if not message.text:
+        return
 
-    messages: Messages = [
+    app_user_id = await get_user_id(message.from_user.id, session)
+    llm_settings = await get_user_llm_settings(app_user_id, session)
+
+    messages = [
         {
             "role": "system",
             "content": "Привет! Ты - ИИ-помощник для бизнеса в Telegram."
@@ -43,24 +28,18 @@ async def message_handler(message: types.Message) -> None:
         },
         {"role": "user", "content": message.text},
     ]
-    provider = Bing
-    stream = True
-    completion = await llm_completion(messages, provider, stream)
-    if stream:
+
+    completion = await srv.llm.chat_completion(messages, llm_settings)
+
+    if type(completion) is str:
+        await message.answer(completion)
+    elif isinstance(completion, AsyncIterator):
         answer_msg = await message.answer("...")
         responce: str = ""
         sent_time: float = time()
         async for chunk in completion:
-            if chunk.choices[0].delta.content:
-                delta = chunk.choices[0].delta.content
-                if isinstance(delta, str):
-                    responce += delta
-                else:
-                    continue
+            responce += chunk
             if int((cur_time := time()) - sent_time) > 2:
                 sent_time = cur_time
                 await answer_msg.edit_text(responce)
         await answer_msg.edit_text(responce)
-    else:
-        responce = await completion
-        await message.answer(responce.choices[0].message.content)
