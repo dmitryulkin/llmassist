@@ -1,47 +1,10 @@
-from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
-
 from g4f.client import AsyncClient
 from g4f.Provider import ProviderType, __map__, __providers__
 from g4f.providers.base_provider import AbstractProvider, ProviderModelMixin
-from loguru import logger
-from pydantic import BaseModel
 
-from src.db.services.settings import LLMSettings
 from src.exceptions import LLMError
-from src.utils.settings import Settings
-
-type LLMChat = list[dict[str, str]]
-
-
-class LLMService(BaseModel, ABC):
-    @classmethod
-    @abstractmethod
-    def get_name(cls) -> str:
-        pass
-
-    @abstractmethod
-    def get_providers(self) -> list[str]:
-        """
-        Returns a list of all working providers.
-        """
-        pass
-
-    @abstractmethod
-    def get_provider_models(self, provider_name: str) -> list[str]:
-        """
-        Returns a list of all working models for provider.
-        """
-        pass
-
-    @abstractmethod
-    async def chat_completion(
-        self, chat: LLMChat, config: dict[str, str]
-    ) -> str | AsyncIterator[str]:
-        """
-        Returns LLM answer as str or AsyncIterator[str] if stream is available
-        """
-        pass
+from src.llms.llm_service import LLMChat, LLMService
 
 
 class GPT4FreeLLMService(LLMService):
@@ -92,7 +55,7 @@ class GPT4FreeLLMService(LLMService):
 
             return streaming()
         else:
-            responce = await completion
+            responce = await completion  # type: ignore
             message = responce.choices[0].message.content
             if not message:
                 raise LLMError("LLM returned empty result")
@@ -108,33 +71,4 @@ class GPT4FreeLLMService(LLMService):
             and isinstance(provider, type)
             and issubclass(provider, AbstractProvider)
             and not ("webdriver" in provider.get_parameters())
-        )
-
-
-class LLM(BaseModel):
-    settings: Settings
-    services: dict[str, LLMService] = {}
-
-    def init(self):
-        logger.info("LLM init...")
-        self.services[GPT4FreeLLMService.get_name()] = GPT4FreeLLMService()
-        logger.info("LLM init done")
-
-    async def chat_completion(
-        self, chat: LLMChat, llm_settings: LLMSettings
-    ) -> str | AsyncIterator[str]:
-        if (
-            GPT4FreeLLMService.get_name() == llm_settings.service
-            and llm_settings.provider
-            and llm_settings.model
-        ):
-            config = {
-                "provider": llm_settings.provider,
-                "model": llm_settings.model,
-            }
-            return await self.services[
-                GPT4FreeLLMService.get_name()
-            ].chat_completion(chat, config)
-        raise LLMError(
-            "LLM Chat Completion could not be created: check LLM settings"
         )

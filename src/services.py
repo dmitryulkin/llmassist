@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from src.aiogram_bot.bot import AIOgramBot
 from src.db.db import DB
-from src.utils.llms.llm import LLM
+from src.llms.llm import LLM
 from src.utils.proxies.manager import ProxyManager
 from src.utils.settings import Settings
 

@@ -134,6 +134,7 @@ async def llm_model_chosen_handler(
             llm_provider=data["provider"],
             llm_model=callback_data.model,
         )
+        await state.clear()
         await call.message.edit_text(
             f"LLM Settings: {data["service"]} > "
             f"{data["provider"]} > {callback_data.model}"
