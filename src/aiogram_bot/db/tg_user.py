@@ -14,6 +14,13 @@ class TgUser(SQLModel, table=True):
 
 
 async def get_user_id(tg_id: int, session: AsyncSession) -> int:
+    """
+    tg_id : int - telegram user id
+    Returns:
+    int - application user id
+    Raises:
+    sqlalchemy.exc.NoResultFound - if user not found or there are many users
+    """
     stmt = (
         select(TgUser, User)
         .where(TgUser.app_user_id == User.id)
