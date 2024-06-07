@@ -23,3 +23,14 @@ services:
     network_mode: host
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
+    # For Windows Docker Desktop  - NVIDIA driver with paravirtualization
+    # is required in the system. It is available on win 11 from NVIDIA website
+    # and on win 10 from subscription.
+    # For WSL2 Docker Core - nvidia-containe-toolkit is required
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
