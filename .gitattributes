@@ -1,1 +1,4 @@
+# auto define text or binary on all files
 * text=auto
+# *.sh is always text with LF endings
+*.sh text eol=lf
